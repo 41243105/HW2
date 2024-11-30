@@ -6,176 +6,180 @@ using namespace std;
 
 class Term {
     friend class Polynomial;
-private:
-    float coef; // «Y¼Æ
-    int exp;    // ¦¸¤è
+public:
+    float coef; // ä¿‚æ•¸
+    int exp;    // æ¬¡æ–¹
 };
 
 class Polynomial {
+	friend ostream& operator<<(ostream& os, const Polynomial& p);
+	friend istream& operator>>(istream& is, Polynomial &p);
 private:
     Term *termarray;
-    int capacity; // °}¦C®e¶q
-    int terms;    // ¶µ¼Æ
+    int capacity; // é™£åˆ—å®¹é‡
+    int terms;    // é …æ•¸
 
 public:
-    Polynomial() : capacity(2), terms(0) {//¹w³]°}¦C®e¶q2 ¶µ¼Æ0 
+    Polynomial() : capacity(2), terms(0) {//é è¨­é™£åˆ—å®¹é‡2 é …æ•¸0 
         termarray = new Term[capacity];
     }
     ~Polynomial() {
         delete[] termarray;
     }
 
-	void addcapacity() {		//¼W¥[·sªº°}¦C®e¶q
-        capacity *= 2;			//¼W¥[­ì¥ıªº2­¿ 
+	void addcapacity() {		//å¢åŠ æ–°çš„é™£åˆ—å®¹é‡
+        capacity *= 2;			//å¢åŠ åŸå…ˆçš„2å€ 
         Term *newarray = new Term[capacity];
-        for (int i = 0; i < terms; i++) {	//½Æ»s­ì¥ıªº¤¸¯À¨ì·sªº¨ºùØ 
+        for (int i = 0; i < terms; i++) {	//è¤‡è£½åŸå…ˆçš„å…ƒç´ åˆ°æ–°çš„é‚£è£ 
             newarray[i] = termarray[i];
         }
-        delete[] termarray;		//§R°£­ì¥ıªº°}¦C 
-        termarray = newarray;	//«ü¦V·s°}¦C 
+        delete[] termarray;		//åˆªé™¤åŸå…ˆçš„é™£åˆ— 
+        termarray = newarray;	//æŒ‡å‘æ–°é™£åˆ— 
     }
     
-    void newterm(float coef, int exp) {		//¦X¨Ö¦h¶µ¦¡ 
-        if (coef == 0) return; 				// ©¿²¤«Y¼Æ¬° 0 ªº¶µ¥Ø
+    void newterm(float coef, int exp) {		//åˆä½µå¤šé …å¼ 
+        if (coef == 0) return; 				// å¿½ç•¥ä¿‚æ•¸ç‚º 0 çš„é …ç›®
         for (int i = 0; i < terms; i++) {	
-            if (termarray[i].exp == exp) {	//¦pªG¦¸¤è¤@¼Ë 
-                termarray[i].coef += coef; // §â¦¸¤è¤@¼Ëªº¨t¼Æ¥[°_¨Ó 
-                if (termarray[i].coef == 0) { // ¦pªG¦X¨Ö«á«Y¼Æ¬° 0
+            if (termarray[i].exp == exp) {	//å¦‚æœæ¬¡æ–¹ä¸€æ¨£ 
+                termarray[i].coef += coef; // æŠŠæ¬¡æ–¹ä¸€æ¨£çš„ç³»æ•¸åŠ èµ·ä¾† 
+                if (termarray[i].coef == 0) { // å¦‚æœåˆä½µå¾Œä¿‚æ•¸ç‚º 0
                     for (int j = i; j < terms - 1; j++) {
-                        termarray[j] = termarray[j + 1]; 	// ¨ì¤U¤@­Ó¶µ¥Ø 
+                        termarray[j] = termarray[j + 1]; 	// åˆ°ä¸‹ä¸€å€‹é …ç›® 
                     }
-                    terms--; // ¶µ¥Ø¼Æ-1 
+                    terms--; // é …ç›®æ•¸-1 
                 }
-                return; // §¹¦¨«áªğ¦^
+                return; // å®Œæˆå¾Œè¿”å›
             }
         }
-        if (terms >= capacity) {	// ¦pªG¶µ¥Ø>=°}¦C®e¶q  °}¦C®e¶q¤£°÷¤F 
-            addcapacity(); 			// ¼W¥[°}¦C®e¶q
+        if (terms >= capacity) {	// å¦‚æœé …ç›®>=é™£åˆ—å®¹é‡  é™£åˆ—å®¹é‡ä¸å¤ äº† 
+            addcapacity(); 			// å¢åŠ é™£åˆ—å®¹é‡
         }
         termarray[terms].exp = exp;
         termarray[terms].coef = coef;
         terms++;
     }
 
-    Polynomial add(const Polynomial& p) const {	//¬Û¥[ 
-    Polynomial result; 							// «Ø¥ß¤@­Ó·s¹ï¶H
+    Polynomial add(const Polynomial& p) const {	//ç›¸åŠ  
+    Polynomial result; 							// å»ºç«‹ä¸€å€‹æ–°å°è±¡
     for (int i = 0; i < terms; i++) {
-        result.newterm(termarray[i].coef, termarray[i].exp); // ½Æ»s·í«eªº¦h¶µ¦¡ 
+        result.newterm(termarray[i].coef, termarray[i].exp); // è¤‡è£½ç•¶å‰çš„å¤šé …å¼ 
     }
     for (int i = 0; i < p.terms; i++) {
-        result.newterm(p.termarray[i].coef, p.termarray[i].exp); // ¥[¤J¥t¤@­Ó¦h¶µ¦¡¨ìnewterm¦X¨Ö 
+        result.newterm(p.termarray[i].coef, p.termarray[i].exp); // åŠ å…¥å¦ä¸€å€‹å¤šé …å¼åˆ°newtermåˆä½µ 
     }
-    return result; //§âµª®×¦^¶Ç¦^¥h
+    return result; //æŠŠç­”æ¡ˆå›å‚³å›å»
 	}
 
 
-    Polynomial mult(const Polynomial& p) const { 	// ¬Û­¼
-        Polynomial result;							// «Ø¥ß¤@­Ó·s¹ï¶H
+    Polynomial mult(const Polynomial& p) const { 	// ç›¸ä¹˜
+        Polynomial result;							// å»ºç«‹ä¸€å€‹æ–°å°è±¡
         for (int i = 0; i < terms; i++) {
             for (int j = 0; j < p.terms; j++) {
-                float newcoef = termarray[i].coef * p.termarray[j].coef; // «Y¼Æ¬Û­¼ 
-                int newexp = termarray[i].exp + p.termarray[j].exp; // «ü¼Æ¬Û¥[
-                result.newterm(newcoef, newexp); 	// ·s¦h¶µ¦¡¨ìnewterm¦X¨Ö
+                float newcoef = termarray[i].coef * p.termarray[j].coef; // ä¿‚æ•¸ç›¸ä¹˜ 
+                int newexp = termarray[i].exp + p.termarray[j].exp; // æŒ‡æ•¸ç›¸åŠ 
+                result.newterm(newcoef, newexp); 	// æ–°å¤šé …å¼åˆ°newtermåˆä½µ
             }
         }
-        return result;//§âµª®×¦^¶Ç¦^¥h 
+        return result;//æŠŠç­”æ¡ˆå›å‚³å›å» 
     }
 
-    double eval(double f) { // ±a¼Æ¦r¶i¥h
+    double eval(double f) { // å¸¶æ•¸å­—é€²å»
         double result = 0.0f;
         for (int i = 0; i < terms; i++) {
-            result += termarray[i].coef * pow(f, termarray[i].exp);//§â¶Ç¤Jªº¼Æ¦r±a¨ì¦h¶µ¦¡¤¤ ¹Bºâ¨C­Óxµ²ªG¥[°_¨Ó 
+            result += termarray[i].coef * pow(f, termarray[i].exp);//æŠŠå‚³å…¥çš„æ•¸å­—å¸¶åˆ°å¤šé …å¼ä¸­ é‹ç®—æ¯å€‹xçµæœåŠ èµ·ä¾† 
         }
-        return result;//§âµª®×¦^¶Ç¦^¥h 
-    }
-
-    void input() {		//¿é¤J¦h¶µ¦¡ 
-        while (true) {
-            float coef;
-            int exp;
-            char a, b;
-            cin >> coef;//¿é¤J«Y¼Æ 
-            cin.get(a); // ¿é¤J 'x' ©Î¨ä¥L¦r¤¸ 
-            if (a == 'x') {//¦pªG¬O'x' 
-                cin.get(b); // ¿é¤J'^' ©Î¨ä¥L¦r¤¸ 
-                if (b == '^') {
-                    cin >> exp;//¦pªG¬O'^'¿é¤J¦¸¤è 
-                } else {
-                    exp = 1; //¦pªG¦³'x'¦ı¨S¦³'^'¦¸¤è´N¬O1
-                }
-            } else {
-                exp = 0; // ¦pªG¨S¦³ 'x' «ü¼Æ= 0
-            }
-            newterm(coef, exp);//§â«Y¼Æ«ü¼Æ¶Ç¨ìnewterm¥h¦X¨Ö 
-            if (cin.peek() == '\n') break; // ¹J¨ì´«¦æ²Åµ²§ô¿é¤J
-        }
-    }
-
-    void outtput() const {			//¿é¥X¦h¶µ¦¡ 
-        if (terms == 0) cout << "0";//¦pªG¶µ¥Ø=0¥Nªí¨S¦³¦h¶µ¦¡Åã¥Ü0 
-        else {
-            for (int i = 0; i < terms; i++) {
-                if (i > 0 && termarray[i].coef > 0) {//¦pªG«Y¼Æ©M¶µ¼Æ³£>0¥Nªí¦h¶µ¦¡ÁÙ¨SÅã¥Ü§¹­n¿é¥X'+' 
-                    cout << "+";
-                }
-                cout << termarray[i].coef;	//¿é¥X«Y¼Æ 
-                if (termarray[i].exp > 0) {	//¦¸¤è>0´N¿é¥X'x' 
-                    cout << "x";
-                }
-                if (termarray[i].exp > 1) {	//¦¸¤è>1´N¿é¥X'^'©M¦¸¤è 
-                    cout << "^" << termarray[i].exp;
-                }
-            }
-        }
-        cout << endl;
+        return result;//æŠŠç­”æ¡ˆå›å‚³å›å» 
     }
 };
 
-int main() {
-	clock_t start,finish;//­pºâ®É¶¡ªº 
-    Polynomial p1, p2;	//2­Ó¦h¶µ¦¡ 
-    cout << "p1=";		// 3x^2+2x+1
-    p1.input();
-    cout << "p2="; 		// 2x^3+4
-    p2.input();
+	istream& operator>>(istream& is, Polynomial& p) {
+    	while (true) {
+        	float coef=0.0;
+        	int exp=0;
+        	char a, b;
+        	is >> coef; // è¼¸å…¥ä¿‚æ•¸
+        	is.get(a);  // è¼¸å…¥ 'x' æˆ–å…¶ä»–å­—å…ƒ
+        	if (a == 'x') { // å¦‚æœæ˜¯ 'x'
+        	    is.get(b);  // è¼¸å…¥ '^' æˆ–å…¶ä»–å­—å…ƒ
+        	    if (b == '^') {
+        	        is >> exp; // å¦‚æœæ˜¯ '^'è¼¸å…¥æ¬¡æ–¹
+        	    } else {
+        	        exp = 1; // å¦‚æœæœ‰ 'x' ä½†æ²’æœ‰ '^'æ¬¡æ–¹å°±æ˜¯ 1
+        	    }
+        	} else {
+        	    exp = 0; // å¦‚æœæ²’æœ‰ 'x'ï¼ŒæŒ‡æ•¸ç‚º 0
+        	}
+        	p.newterm(coef, exp); // å°‡ä¿‚æ•¸èˆ‡æ¬¡æ–¹å‚³åˆ° `newterm` é€²è¡Œåˆä½µ
+        	if (is.peek() == '\n') break; // é‡åˆ°æ›è¡Œç¬¦çµæŸè¼¸å…¥
+    	}
+    	return is;
+	}
 
-    cout << "·s¼W·sªº¶µ¥Ø" << endl;
-    cout << "¶µ¥Øªº¨t¼Æ:"; 
+	ostream& operator<<(ostream& os, const Polynomial& p) {
+	    if (p.terms == 0) {
+	        os << "0"; // å¦‚æœæ²’æœ‰å¤šé …å¼é¡¯ç¤º 0
+	    } 
+		else {
+	        for (int i = 0; i < p.terms; i++) {
+	            if (i > 0 && p.termarray[i].coef > 0) {
+	                os << "+"; // å¦‚æœä¿‚æ•¸å’Œé …æ•¸éƒ½ >0é¡¯ç¤º '+'
+	            }
+	            os << p.termarray[i].coef; // è¼¸å‡ºä¿‚æ•¸
+	            if (p.termarray[i].exp > 0) { // æ¬¡æ–¹ >0 å‰‡è¼¸å‡º 'x'
+	                os << "x";
+	            }
+	            if (p.termarray[i].exp > 1) { // æ¬¡æ–¹ >1 å‰‡è¼¸å‡º '^' å’Œæ¬¡æ–¹
+	                os << "^" << p.termarray[i].exp;
+	            }
+	        }
+	    }
+	    return os;
+	}
+
+int main() {
+	clock_t start,finish;//è¨ˆç®—æ™‚é–“çš„ 
+    Polynomial p1, p2;	//2å€‹å¤šé …å¼ 
+    cout << "p1=";		// 3x^2+2x+1
+    cin>>p1;
+    cout << "p2="; 		// 2x^3+4
+    cin>>p2;
+
+    cout << "æ–°å¢æ–°çš„é …ç›®" << endl;
+    cout << "é …ç›®çš„ç³»æ•¸:"; 
     int exp;
     float coef;
     cin >> coef;			// 5
-    cout << "¶µ¥Øªº«ü¼Æ:"; 
+    cout << "é …ç›®çš„æŒ‡æ•¸:"; 
     cin >> exp;				// 2
-    p1.newterm(coef, exp);	//§â·s¥[ªº¶µ¥Ø¥[¨ìp1¤¤ 
+    p1.newterm(coef, exp);	//æŠŠæ–°åŠ çš„é …ç›®åŠ åˆ°p1ä¸­ 
 
-    cout << "\n§ó·s«áªºp1:"; 
-    p1.outtput();			// 8x^2+2x+1
+    cout << "\næ›´æ–°å¾Œçš„p1:"; 
+    cout<<p1<<endl;			// 8x^2+2x+1
 
     cout << "\nadd" << endl;	
-    start=clock();					//­pºâ®É¶¡¶}©l 
+    start=clock();					//è¨ˆç®—æ™‚é–“é–‹å§‹ 
     Polynomial sum = p1.add(p2); 	//p1+p2 			
-    cout << "p1+p2=";
-    sum.outtput();					// 8x^2+2x+5+2x^3
-    finish=clock();					//­pºâ®É¶¡µ²§ô 
-    cout << "add() »İ®É: " << (double)(finish - start) / CLOCKS_PER_SEC << " s" << endl;//­pºâadd©Ò»İªº®É¶¡ 
+    cout << "p1+p2="<<sum<<endl;	// 8x^2+2x+5+2x^3
+    finish=clock();					//è¨ˆç®—æ™‚é–“çµæŸ 
+    cout << "add() éœ€æ™‚: " << (double)(finish - start) / CLOCKS_PER_SEC << " s" << endl;//è¨ˆç®—addæ‰€éœ€çš„æ™‚é–“ 
     
     cout << "\nmult" << endl;
     cout << "p1*p2=";
-    start=clock();					//­pºâ®É¶¡¶}©l 
+    start=clock();					//è¨ˆç®—æ™‚é–“é–‹å§‹ 
     Polynomial xx = p1.mult(p2); 	//p1*p2 
-	xx.outtput();					// 16x^5+32x^2+4x^4+8x+2x^3+4
-	finish=clock();					//­pºâ®É¶¡µ²§ô 
-    cout << "mult() »İ®É: " << (double)(finish - start) / CLOCKS_PER_SEC << " s" << endl;//­pºâmult©Ò»İªº®É¶¡ 
+	cout<<xx<<endl;					// 16x^5+32x^2+4x^4+8x+2x^3+4
+	finish=clock();					//è¨ˆç®—æ™‚é–“çµæŸ 
+    cout << "mult() éœ€æ™‚: " << (double)(finish - start) / CLOCKS_PER_SEC << " s" << endl;//è¨ˆç®—multæ‰€éœ€çš„æ™‚é–“ 
 
 
     double f = 0.0f;
     cout << "\neval" << endl;
-    cout << "fªº­È:"; 				//¿é¤J­n±a¶ip1¤¤ªº­È
-    start = clock();				//­pºâ®É¶¡¶}©l 
+    cout << "fçš„å€¼:"; 				//è¼¸å…¥è¦å¸¶é€²p1ä¸­çš„å€¼
+    start = clock();				//è¨ˆç®—æ™‚é–“é–‹å§‹ 
     cin >> f;						//1
     cout << "p1(" << f << ")=" << p1.eval(f) << endl;	// 11
-    finish = clock();					//­pºâ®É¶¡µ²§ô 
-    cout << "eval() »İ®É: " << (double)(finish - start) / CLOCKS_PER_SEC << " s" << endl;//­pºâeval©Ò»İªº®É¶¡ 
+    finish = clock();				//è¨ˆç®—æ™‚é–“çµæŸ 
+    cout << "eval() éœ€æ™‚: " << (double)(finish - start) / CLOCKS_PER_SEC << " s" << endl;//è¨ˆç®—evalæ‰€éœ€çš„æ™‚é–“ 
     return 0;
 }
 
